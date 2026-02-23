@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0">
+    <meta name="format-detection" content="telephone=no" />
+    <title>조동혁&정다혜 모바일청첩장</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="./resource/images/heart.svg">
+    <link rel="stylesheet" href="resource/css/slide.css">
+    <script src="//developers.kakao.com/sdk/js/kakao.min.js"></script>
+    <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=6c217e966a6cec13e2d943ef3d7fe63f&libraries=services"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Gowun+Batang&family=Parisienne&display=swap');
+    @import url('https://fonts.cdnfonts.com/css/francisco');
+    @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@200;400&family=Gowun+Batang&family=Parisienne&display=swap');
+    @font-face {
+        font-family: 'GyeonggiBatang';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/GyeonggiBatang.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'Chosunilbo_myungjo';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/Chosunilbo_myungjo.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    @font-face {
+        font-family: 'GowunBatang-Regular';
+        src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/GowunBatang-Regular.woff') format('woff');
+        font-weight: normal;
+        font-style: normal;
+    }
+    :root { scroll-behavior :smooth; }
+    body {font-size: 4vw;line-height: 0;box-sizing: border-box;}
+    body, div, img, span, p {margin:0;padding:0;font-family: 'Chosunilbo_myungjo';text-align: center;-webkit-font-smoothing: antialiased;box-sizing: border-box;}
+    ul, li {list-style: none;margin:0;padding:0;}
+    .flex_layout {display: flex;justify-content: center;margin-left: auto;margin-right: auto;background: #333;}
+    .layout__ {position: relative;max-width: 430px;width: 100vw;background: #fbfbfd;z-index: 1;}
+    .container {max-width: 100vw;}
+    .header {position: relative;background:#fff;height:100vh;/*display: grid;grid-template-rows: 1fr auto;*/overflow: hidden;max-height: 735px;}
+    
+    .area .subTitle {font-size: 0.9rem;line-height: 2em;font-family: 'Chosunilbo_myungjo';color: #666;}
+    .place_info .subTitle {font-size: 1rem;}
+
+    .header {
+        height: 50vh;
+        height: calc(var(--vh, 1vh) * 56);
+    }
+    
+    .header .text {z-index:1;display: flex;align-items: center;justify-content: flex-start;flex-direction: column;padding: clamp(20px, 25vw, 80px) 0 0;background: linear-gradient(0deg, transparent, rgba(220,227,234,0.8));position: absolute;width: 100vw;height: 7vh;max-width: 430px;}
+    .header .text p {font-family: 'Francisco';font-size: 3.5rem;line-height:3.5rem;position: relative;animation: fadeInUp 1s;animation-fill-mode: forwards;animation-delay: 0.5s;opacity: 0;}
+    .header .text p:first-child {animation-delay: 0s;}
+    .header .img_top {position: absolute;top: 0;}
+    .header .img_top > img {width:100%;}
+    .header .main_img > img {width:100%;height: 100%;}
+    .main_img {position: relative;}
+    .place_info {padding:45px 0 65px;background: #fff;color:#333;}
+	.place_info > p {font-size: 1rem;line-height: 2em;font-family: 'GyeonggiBatang';}
+    .place_info > .name {font-family: 'GyeonggiBatang';font-size: 1.9rem;margin-bottom:15px;line-height: 2rem;}
+    .greeting_wrap .inner {background: #fbfbfd;background-image:url("./resource/images/patterns.png");padding:50px 0;}
+    .greeting_wrap h3 {font-family: 'GyeonggiBatang';font-size: 1.1rem;line-height: 1.1rem;font-weight: 100;margin: 0px 0 20px;color:#333;}
+    .greeting_wrap .tt {font-size: 0.9rem;color: #8A92B3;font-family: 'GowunBatang-Regular';line-height: 2.5em;border-bottom: 1px solid rgba(138,146,179,0.15);}
+    .intrd_area > div:not(.icon) {display: inline-flex;flex-direction: column;}
+    .intrd_area .icon {background: url("./resource/images/icon.svg") no-repeat 50% 50%;width: 20px;height: 36px;background-size: 20px auto;position: relative;margin: 0 auto;
+        filter: invert(64%) sepia(10%) saturate(813%) hue-rotate(191deg) brightness(89%) contrast(95%);margin-bottom: 20px;}
+    .greeting_wrap .invitation {font-size: 0.9rem;line-height: 2em;color:#333;}
+    .greeting_wrap .wave_container {top: -50px;height: 70px;}
+    .greeting_wrap .parallax use {animation: none;}
+    .wave_container {position: absolute;bottom: 0;z-index: 2;width: 100vw;max-width: 430px;}
+    .waves {position: relative;width: 100%;height: 50px;min-height: 40px;max-height: 50px;}
+    /* Animation */
+    .parallax > use {animation: move-forever 25s cubic-bezier(0.55,.5,0.45,.5) infinite;}
+    .parallax > use:nth-child(1) {animation-delay: -2s;animation-duration: 7s;}
+    .parallax > use:nth-child(2) {animation-delay: -3s;animation-duration: 10s;}
+    .parallax > use:nth-child(3) {animation-delay: -4s;animation-duration: 13s;}
+    .parallax > use:nth-child(4) {animation-delay: -5s;animation-duration: 20s;}
+    @keyframes move-forever {
+        0% {
+            transform: translate3d(-90px, 0, 0);
+        }
+        100% {
+            transform: translate3d(85px, 0, 0);
+        }
+    }
+    /*Shrinking for mobile*/
+    /* @media(max-width: 430px) {
+        .waves {
+            height: 50px;
+            min-height: 40px;
+            margin-bottom: 20px;
+        }
+    } */
+    @media (min-width: 280px), (max-width: 319px) and (orientation: portrait) {
+        .header .img {display: flex;justify-content: center;}
+        /* .header .img > img {width:115%;} */
+    }
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 100%, 0);
+        }
+        to {
+            opacity: 1;
+            transform: translateZ(0);
+        }
+    }
+    @media (horizontal-viewport-segments: 2) {
+        /* 가로보기일 경우 */
+        body {
+            background-color: green;
+        }
+    }
+    @media (vertical-viewport-segments: 2) {
+        /* 세로보기일 경우 */
+        body {
+            background-color: blue;
+        }
+    }
+    .area {opacity: 0;}
+    .area.view{animation: fadeInUp 1s;animation-fill-mode: forwards;animation-delay: 0s;}
+    .moving{position: absolute;top: 0;width: 100%;height: 100%;z-index: 1;}
+    .moving.heart2{animation: heart2 20s linear infinite;background-image: url(./resource/images/heart2.png),url(./resource/images/heart3.png);pointer-events: none;background-size: cover;}
+
+    @keyframes flower3 {
+        0%{background-position:0 0,0 0,0 0;}
+        50%{background-position:500px 500px,100px 200px,-100px 140px;}
+        to{background-position:1000px 1000px,200px 300px,-200px 300px;}
+    }
+    @keyframes heart2 {
+        0%{background-position:0 0,0 0,0 0;}
+        50%{background-position:500px 500px,100px 200px,-100px 140px;}
+        to{background-position:1000px 1000px,200px 300px,-200px 300px;}
+    }
+
+.img_wrap, .img_wrap img {width: 100%;box-sizing: border-box;}
+
+.info_wrap {padding:50px 0;display: flex;flex-direction: column;align-items: center;}
+.info_box {font-size: 1.1rem;line-height:1.1rem;display: flex;align-items: center;justify-content: center;white-space: pre;margin-bottom: 15px;color:#666;}
+.info_box span {color:#333;}
+.info_box em {font-style: normal;font-size: 0.8rem;padding:0 10px;color:#666;}
+.info_box.bride em {padding: 0 15px;}
+.info_box.bride {margin-bottom: 0;}
+.info_box .mobile {display: inline-block;width: 15px;height: 15px;background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='none' viewBox='0 0 24 24'%3E%3Cpath fill='%231C274C' d='m14.556 15.548-.455.48s-1.083 1.139-4.038-1.972c-2.955-3.111-1.872-4.25-1.872-4.25l.287-.303c.706-.744.773-1.938.156-2.81L7.374 4.91C6.61 3.83 5.135 3.688 4.26 4.609L2.691 6.26c-.433.457-.723 1.048-.688 1.705.09 1.68.808 5.293 4.812 9.51 4.247 4.47 8.232 4.648 9.861 4.487.516-.05.964-.329 1.325-.709l1.42-1.496c.96-1.01.69-2.74-.538-3.446l-1.91-1.1c-.806-.463-1.787-.327-2.417.336Z' opacity='.5'/%3E%3C/svg%3E");}
+
+.calendar_wrap {padding:60px 0;background: #fbfbfd;}
+.area h4 {font-family: 'Parisienne';font-size: 1rem;line-height:1rem;margin: 0 0 15px;color: #8A92B3;font-weight: 400;letter-spacing: 0.15rem;}
+.calendar_wrap .title .month {font-family: 'Crimson Pro';font-size: 1.5rem;line-height:2.2rem;font-weight: 200;color:#333;}
+.calendar_wrap .title .place {font-size: 1rem;line-height:1.2rem;color:#666;}
+.calendar_wrap .datetime {display: inline-block;font-size: 1rem;line-height: 1.7rem;padding: 16px 30px;margin-top: 1rem;letter-spacing: 1px;border-radius: 8px}
+.calendar_wrap .hours {margin-bottom: 1.25rem;letter-spacing: 1px;font-size: .9rem;line-height:1rem;}
+.dday_wrap {letter-spacing: -.5px;border-left: 0;border-right: 0;font-size: .9rem}
+.dday_wrap .highlight {color: #ea7664;font-weight: bold;}
+.dday_wrap .countdown {font-family: 'Crimson Pro';margin: 0 0 10px}
+.dday_wrap .countdown > div {display: inline-block;vertical-align: top;font-size: 10px;letter-spacing: 0;line-height: 1rem;text-transform: uppercase;}
+.dday_wrap .countdown > div > span {padding: 0 2px;text-align: center;line-height: 1.8rem;}
+.dday_wrap .countdown .myDay {color: #333;font-size: 1.5rem;font-family: 'Crimson Pro';}
+.dday_wrap .countdown .desc {color: #333;opacity: .4;}
+.dday_wrap .myDay_count {margin-top:10px;line-height: 1.2rem;font-size: 1rem;}
+.c_calendar {padding: 0 10px;margin: 2rem 3rem;border: 1px solid rgba(138,146,179,0.15);border-left: 0;border-right: 0}
+.c_calendar_table {padding: 1.5rem 0;width: 100%;}
+.c_calendar_table > tbody tr td:first-child,.c_calendar_table>thead tr th:first-child {color: #d099a1;}
+.c_calendar_eday > div {background: var(--icon-color)}
+.c_calendar_eday > .c_calendar_holiday {opacity: .3}
+.c_calendar_table > thead tr th {padding-bottom: 8px;font-size: 1rem;line-height:1rem;font-family: 'GyeonggiBatang';font-weight: normal;color:#333;}
+.c_calendar_table > tbody tr td {font-size: 1rem;line-height:2rem;font-family: 'GyeonggiBatang';font-weight: normal;color:#333;}
+.c_calendar tr {display: grid;grid-template-columns: repeat(7, 1fr);gap: 10px;margin-bottom: 10px;}
+#app .c_calendar_table {line-height: 1.8rem}
+.calendar_wrap .my_wedding_day {background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xml:space='preserve' style='enable-background:new 0 0 300 257' viewBox='0 0 300 257'%3E%3Cpath d='M279.65 145.59C261.06 174.73 204.45 233.15 150 257 95.55 233.15 38.94 174.73 20.35 145.59 6.41 123.73-1.26 100.47.17 74.61c1.25-22.47 12.64-44.19 30.46-58.02C48.45 2.77 72.39-2.92 94.55 1.44c23.64 4.64 44.64 20.82 55.46 42.22 10.82-21.4 31.81-37.58 55.46-42.22 22.15-4.36 46.09 1.33 63.91 15.15 17.82 13.83 29.21 35.55 30.46 58.02 1.42 25.86-6.25 49.12-20.19 70.98z' style='fill:%23ea7664'/%3E%3C/svg%3E") no-repeat 50% -1px;background-size: 100% 100%;color: #fff;font-weight: 700;}
+
+.gallery_wrap h4 {margin-bottom: 40px;}
+.map_wrap {background:#fbfbfd;padding: 0 0 50px;}
+.map_wrap .map_container .title, 
+.account_wrap .account_container .title {font-size: 1.2rem;line-height: 2.2rem;font-weight: 200;color: #333;}
+/* .map_wrap .map_container .address {font-size: 0.9rem;line-height: 1.8rem;color: #333;margin-top: 10px;} */
+.copy_popup {display: none;position: absolute;background: rgba(0,0,0,0.5);padding: 6px 12px;font-size: 0.8rem;color: #fff;line-height: 1.2rem;border-radius: 5px;left: 50%;transform: translate(-50%, 20px);}
+#copy-map-address {background: #fff;border: 1px solid #ddd;padding: 10px;border-radius: 5px;font-size: 0.9rem;line-height: 0.9rem;color: #333;margin: 10px 0 50px;}
+.navi_btn {display: grid;grid-template-columns: repeat(3, 1fr);justify-items: center;padding: 10px 0;background: #fff;border: 1px solid #ddd;margin: 10px 20px 60px;}
+.navi_btn > a {font-size: 0.8rem;line-height: 0.9rem;color: #333;text-decoration: none;display: flex;justify-content: center;align-items: center;border-right: 1px solid #eee;width: 100%;text-align: center;}
+.navi_btn > a:last-child {border-right: none;}
+.navi_btn > a::before {content: '';display: inline-flex;width: 17px;height: 17px;background-size: 17px auto;padding-right: 5px;}
+.kakaoNavi::before {background: url(./resource/images/kakaonavi.jpeg) no-repeat 0 50%;}
+.naverNavi::before {background: url(./resource/images/navermap.jpeg) no-repeat 0 50%;}
+.tmapNavi::before {background: url(./resource/images/tmap.jpeg) no-repeat 0 50%;}
+.map_info {line-height: 1rem;padding: 0 20px;}
+.map_info li { margin-top: 30px;}
+.map_info .title {text-align: left;font-size: 0.9rem;border-bottom: 1px dashed #ddd;padding-bottom: 10px;margin-bottom: 10px;color: #8A92B3;}
+.map_info .text {text-align: left;font-size: 0.8rem;}
+.map_info .text > p {text-align: left;}
+.map_info .highlight {text-decoration: none;color: #ea7664;font-style: normal;}
+
+.account_wrap {padding: 60px 0;background: #fff;}
+.account_wrap .item {border: 1px solid #ddd;font-size: 0.8rem;padding: 6px;margin: 40px 20px 20px;border-radius: 5px;}
+.account_wrap .item:last-child {margin-top: 10px;}
+.account_wrap .item .arrow {position: absolute;top: 50%;right: 0;transform: translate(0, -50%);width: 20px;height: 20px;background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23666' class='style-icon arrow-icon absolute top-1/2 right-6 -translate-y-1/2 justify-self-end' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19 9-7 7-7-7'/%3E%3C/svg%3E");}
+.account_wrap .item .title {font-size: 0.8rem;position: relative;}
+.account_wrap .item .account_info {display: none;}
+
+.account_wrap .item.on .arrow {transform: rotate(180deg) translate(0, 50%);}
+.account_wrap .item.on .account_info {display: block;}
+.account_wrap .item.on .title {border-bottom: 1px solid #ddd;}
+.account_info {padding: 10px 10px 0;}
+.account_info li {border-bottom: 1px solid #eee;padding: 10px;}
+.account_info li:last-child {border-bottom: none;}
+.account_info > li > div {display: flex;justify-content: space-between;align-items: center;min-height: 30px;}
+.account_info > li > div > p {font-size: 0.9rem;}
+.kakao_pay {background: url(./resource/images/kpay_a.jpeg) no-repeat 50% 50%;background-size: 36px auto;width: 64px;height: 30px;background-color: #fae14b;border-radius: 5px;}
+.copy_account_btn {width: 64px;height: 30px;background-color: #fff;border-radius: 5px;border: 1px solid #ddd;margin-top: 10px;font-size: 0.9rem;line-height: 0.9rem;color: #333;}
+
+.thankU {font-size: 0.6rem;line-height: 1rem;color: #666;margin:50px 0 80px;}
+.thankU h4 {font-family: 'Francisco';font-size: 1rem;margin-bottom:0;line-height: 2rem;color:#888;font-weight: normal;}
+
+.layer_pop {position: fixed;top: 0;left: 0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index: -9999;visibility: hidden;}
+.layer_pop.open {z-index: 10;visibility:visible;}
+.call_pop .pop_inner {position: fixed;top: 50%;left: 50%;transform: translate(-50%, -50%);background: #fff;z-index: 3;max-width: 300px;width: 100%;border-radius: 10px;}
+.pop_header {position: relative;background: #c7cce1;padding: 15px;border-radius: 10px 10px 0 0;}
+.layer_pop .close_btn {font-size:0;position: absolute;width: 40px;height: 40px;left: 50%;bottom:45px;transform: translate(-50%, 0);background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' fill='none' viewBox='0 0 24 24'%3E%3Cpath stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='4' d='m18 18-6-6m0 0L6 6m6 6 6-6m-6 6-6 6'/%3E%3C/svg%3E");}
+
+.layer_pop .gallery_pop {width: 90vw;position: relative;margin: 0 auto;top: 50%;transform: translate(0, -60%);}
+.layer_pop .gallery_pop img {width: 100%;}
+
+.font-size-zoom {background: rgba(255, 255, 255, 0.8);position: fixed;right: 20px;top: 20px;z-index: 2;}
+.font-size-zoom  > div {border: 1px solid #ddd;padding: 3px;display: flex;justify-content: center;align-items: center;font-size: 1rem;}
+</style>
+<body>
+    <div class="flex_layout">
+        <div class="layout__">
+            <div class="container">
+                <div class="header">
+                    <div class="moving heart2"></div>
+                    <div class="text">
+                        <p>Join us for</p>
+                        <p>our wedding</p>
+                    </div>
+                    <div class="img main_img">
+                        <img src="./resource/images/main_.jpg" alt="이미지1">
+                        <!--Waves Container-->
+                        <div class="wave_container">
+                            <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                                viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                                <defs>
+                                    <path id="gentle-wave"
+                                        d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                                </defs>
+                                <g class="parallax">
+                                    <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7" />
+                                    <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                                    <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                                    <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+                                </g>
+                            </svg>
+                        </div>
+                        <!--Waves end-->
+                        <use xlink:href="#gentle-wave" x="48" y="0" fill="rgba(255,255,255,0.7)" />
+                        <use xlink:href="#gentle-wave" x="48" y="3" fill="rgba(255,255,255,0.5)" />
+                        <use xlink:href="#gentle-wave" x="48" y="5" fill="rgba(255,255,255,0.3)" />
+                        <use xlink:href="#gentle-wave" x="48" y="7" fill="#fff" />
+                    </div>
+                </div>
+				<div class="place_info area">
+                    <p class="name">조동혁 & 정다혜</p>
+                    <p class="area1">2026년 4월 25일 토요일 낮 1시<br>나인트리 바이 파르나스 서울 판교 3F<br>Hibiscus Restaurant</p>
+                </div>
+                <div class="greeting_wrap area area_wrap">
+                    <div class="wave_container">
+                        <svg class="waves" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            viewBox="0 24 150 28" preserveAspectRatio="none" shape-rendering="auto">
+                            <defs>
+                                <path id="gentle-wave"
+                                    d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z" />
+                            </defs>
+                            <g class="parallax">
+                                <use xlink:href="#gentle-wave" x="48" y="0" fill="rgb(251, 251, 253)" />
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="inner intrd_area">
+                        <div class="icon area"></div>
+                        <div class="area">
+                            <!--<h3>소중한 분들을 초대합니다.</h3>-->
+                            <p class="invitation">
+                                가족과 친지분들만 모시고<br>작은 예식으로 진행됩니다.<br>
+                                많은 분들을 모시지 못함을 양해 부탁드리며,<br>
+                                따뜻한 축복으로 함께해 주시면 감사하겠습니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info_wrap area">
+                    <!-- 신랑 -->
+                    <div class="info_box"><span>조정일</span> · <span>유재출</span><em>아들</em><span>동혁</span></div>
+                    <!-- 신부 -->
+                    <div class="info_box bride"><span>정삼태</span> · <span>우미라</span><em>딸</em><span>다혜</span></div>
+                </div>
+                <div class="calendar_wrap area">
+                    <h4>Calendar</h4>
+                     <div class="calendar_inner">
+                        <div class="title">
+                            <div class="month">2026. 4. 25</div>
+                            <div class="place">토요일 낮 1시</div>
+                        </div>
+                        <div class="c_calendar area">
+                            <table cellspacing="0" class="c_calendar_table">
+                                <thead>
+                                    <tr>
+                                        <th>일</th>
+                                        <th>월</th>
+                                        <th>화</th>
+                                        <th>수</th>
+                                        <th>목</th>
+                                        <th>금</th>
+                                        <th>토</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="area">
+                                        <td><span></span></td>
+                                        <td><span></span></td>
+                                        <td><span></span></td>
+                                        <td><span>1</span></td>
+                                        <td><span>2</span></td>
+                                        <td><span>3</span></td>
+                                        <td><span>4</span></td>
+                                    </tr>
+                                    <tr class="area">
+                                        <td><span>5</span></td>
+                                        <td><span>6</span></td>
+                                        <td><span>7</span></td>
+                                        <td><span>8</span></td>
+                                        <td><span>9</span></td>
+                                        <td><span>10</span></td>
+                                        <td><span>11</span></td>
+                                    </tr>
+                                    <tr class="area">
+                                        <td><span>12</span></td>
+                                        <td><span>13</span></td>
+                                        <td><span>14</span></td>
+                                        <td><span>15</span></td>
+                                        <td><span>16</span></td>
+                                        <td><span>17</span></td>
+                                        <td><span>18</span></td>
+                                    </tr>
+                                    <tr class="area">
+                                        <td><span>19</span></td>
+                                        <td><span>20</span></td>
+                                        <td><span>21</span></td>
+                                        <td><span>22</span></td>
+                                        <td><span>23</span></td>
+                                        <td><span>24</span></td>
+                                        <td  class="my_wedding_day"><span>25</span></td>
+                                    </tr>
+                                    <tr class="area">
+                                        <td><span>26</span></td>
+                                        <td><span>27</span></td>
+                                        <td><span>28</span></td>
+                                        <td><span>29</span></td>
+                                        <td><span>30</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+ 
+					
+                <div class="map_wrap area">
+                    <h4>Location</h4>
+                    <div class="map_container">
+                        <div class="title">오시는 길</div>
+                        <div class="address subTitle">경기도 성남시 수정구 창업로 18<br>나인트리 바이 파르나스 서울 판교 3F<br>Hibiscus Restaurant<br>Tel. 031-5178-5101~2</div>
+                        <button id="copy-map-address" class="copy_btn" data-clipboard-text="나인트리 프리미어 호텔 서울 판교">
+                            <span>주소 복사</span>
+                            <div class="copy_popup"><span>주소가 복사되었습니다</span></div>
+                        </button>
+
+						<div class="navi_btn">
+                            <a href="https://kko.to/Clnj4qrVJE" class="kakaoNavi">카카오내비</a>
+                            <a href="https://map.naver.com/p/directions/-/14148574.2419016,4496918.1815552,%EB%82%98%EC%9D%B8%ED%8A%B8%EB%A6%AC%20%EB%B0%94%EC%9D%B4%20%ED%8C%8C%EB%A5%B4%EB%82%98%EC%8A%A4%20%EC%84%9C%EC%9A%B8%20%ED%8C%90%EA%B5%90,1766036961,PLACE_POI/-/car?c=14.00,0,0,0,dh" class="naverNavi">네이버지도</a>
+                            <a href="https://tmap.life/6f098523" class="tmapNavi">티맵</a>
+                        </div>
+						
+                        <div id="map" style="width:100%;height:100vw;max-height: 340px;"></div>
+
+                    </div>
+                    <!--<div class="map_info">
+                        <ul>
+                            <li>
+                                <div class="title">주차안내</div>
+                                <div class="text">
+                                    <p>지하 2~3층 주차장<em class="highlight">블라블라</em></p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="title">셔틀</div>
+                                <div class="text">판교역 00번 출구 뒷편 버스정류장 앞 <strong class="highlight">[10:50, 11:20] 2번 운영</strong></div>
+                            </li>
+                        </ul>
+                    </div>-->
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+    <script>
+
+        function Mobile() {return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);}
+
+        let elementsArray = document.querySelectorAll(".area");
+        let screenH = window.innerHeight / 0.95;
+        let retVal = ele => ele.getBoundingClientRect().top;
+
+        window.onload = function () {
+            elementsArray.forEach(function (ele) {
+                let xval = retVal(ele);
+                if (xval < screenH && xval > 0) ele.classList.add("view");
+            });
+        }
+        window.onscroll = function () {
+            elementsArray.forEach(function (ele) {
+                let xval = retVal(ele);
+                if (xval < screenH && xval > 0) ele.classList.add("view");
+            });
+        };
+
+        elementsArray.forEach((ele, index) => {
+            if (ele.querySelectorAll(".area") !== null) ele.querySelectorAll(".area").forEach((el, index) => el.style.animationDelay = "0." + (index + 3) + "s")
+        })
+
+        // document.documentElement.addEventListener('touchstart', function (event) {
+        //     if (event.touches.length > 1) {
+        //         event.preventDefault();
+        //     }
+        // }, false);
+
+        // var lastTouchEnd = 0;
+
+        // document.documentElement.addEventListener('touchend', function (event) {
+        //     var now = (new Date()).getTime();
+        //     if (now - lastTouchEnd <= 300) {
+        //         event.preventDefault();
+        //     } lastTouchEnd = now;
+        // }, false);
+
+
+        // 높이값
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", `${vh}px`);
+        document.querySelector(".main_img").style.maxHeight = document.querySelector(".main_img > img").innerHeight + 'px';
+
+        // 디데이
+        // const remainTime = document.querySelector(".countdown");
+        // let days = remainTime.querySelector(".days");
+        // let hour = remainTime.querySelector(".hour");
+        // let min = remainTime.querySelector(".min");
+        // let sec = remainTime.querySelector(".sec");
+        // let myDay = document.querySelector(".dday_wrap .myDay_count .myDay");
+
+        // function dDay() {
+        //     const masTime = new Date("2024/02/03 12:00:00");
+        //     const todayTime = new Date();
+            
+        //     const diff = masTime - todayTime;
+            
+        //     const diffDay = Math.floor(diff / (1000*60*60*24));
+        //     const diffHour = Math.floor((diff / (1000*60*60)) % 24);
+        //     const diffMin = Math.floor((diff / (1000*60)) % 60);
+        //     const diffSec = Math.floor(diff / 1000 % 60);
+            
+        //     days.innerText = `${diffDay}`;
+        //     hour.innerText = `${diffHour}`;
+        //     min.innerText = `${diffMin}`;
+        //     sec.innerText = `${diffSec}`;
+        //     myDay.innerText = `${diffDay}`;
+        // }
+
+        // dDay();
+        // setInterval(dDay, 1000);
+
+
+        // 이미지 슬라이드
+        // const sliderContainer = document.querySelector('.gallery_container');
+        // const slider = document.querySelector('.gallery_container ul');
+        // const sliderItem = slider.querySelectorAll('.gallery_item');
+
+
+        // let clicked = false;
+        // let xAxis;
+        // let x;
+
+        // if(!Mobile()) {
+        //     sliderContainer.addEventListener('mouseup', () => {
+        //         sliderContainer.style.cursor = `grab`;
+        //     }) 
+
+        //     sliderContainer.addEventListener('mousedown', e => {
+        //         clicked = true
+        //         xAxis = e.offsetX - slider.offsetLeft;
+        //         sliderContainer.style.cursor = `grabbing`;
+        //     })
+
+        //     window.addEventListener('mouseup', () => {
+        //         clicked = false;
+        //     })
+
+        //     sliderContainer.addEventListener('mousemove', e => {
+        //         if (!clicked) return;
+        //         e.preventDefault();
+
+        //         x = e.offsetX;
+        //         slider.style.left = `${x - xAxis}px`;
+        //         slider.style.pointerEvents = 'none';
+
+        //         checkSize();
+        //     })
+        // }
+        
+
+        // const checkSize = () => {
+        //     let sliderContainerOut = sliderContainer.getBoundingClientRect();
+        //     let sliderIn = slider.getBoundingClientRect();
+        //     if (parseInt(slider.style.left) > 0) {
+        //         slider.style.left = `0px`;
+        //     }else if (sliderIn.right < sliderContainerOut.right) {
+        //         slider.style.left = `-${sliderIn.width - sliderContainerOut.width}px`;
+        //     }
+
+        //     if( Math.abs(slider.offsetLeft) >= (slider.scrollWidth - sliderContainer.offsetWidth)) {
+        //         slider.style.left = `-${slider.scrollWidth - sliderContainer.offsetWidth}px`;
+        //     }
+        // }
+
+        // sliderContainer.addEventListener('touchstart', e => {
+        //     clicked = true;
+        //     xAxis = e.targetTouches[0].clientX - slider.offsetLeft;
+        // },{passive: true})
+
+        // sliderContainer.addEventListener('touchmove', e => {
+        //     if(!clicked) return;
+        //     x = e.targetTouches[0].clientX;
+        //     slider.style.left = `${x - xAxis}px`;
+        //     checkSize();
+        // },{passive: true})
+
+        //지도
+        var mapContainer = document.getElementById('map'), // 지도를 표시할 div 
+            mapOption = { 
+                center: new kakao.maps.LatLng(37.41340896228362, 127.09833389035687), //지도의 중심좌표.
+                level: 3 // 지도의 확대 레벨
+            };
+
+        var map = new kakao.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
+
+        var imageSrc = './resource/images/marker.png', // 마커이미지의 주소입니다    
+            imageSize = new kakao.maps.Size(50, 54), // 마커이미지의 크기입니다
+            imageOption = {offset: new kakao.maps.Point(20, 52)}; // 마커이미지의 옵션입니다. 마커의 좌표와 일치시킬 이미지 안에서의 좌표를 설정합니다.
+            
+        // 마커의 이미지정보를 가지고 있는 마커이미지를 생성합니다
+        var markerImage = new kakao.maps.MarkerImage(imageSrc, imageSize, imageOption),
+            markerPosition = new kakao.maps.LatLng(37.41340896228362, 127.09833389035687); // 마커가 표시될 위치입니다
+
+        // 마커를 생성합니다
+        var marker = new kakao.maps.Marker({
+            position: markerPosition, 
+            image: markerImage // 마커이미지 설정 
+        });
+
+        // 마커가 지도 위에 표시되도록 설정합니다
+        marker.setMap(map);
+
+        //복사
+        let copyAddress = new ClipboardJS('#copy-map-address');
+        let copyAccount01 = new ClipboardJS('#copy-account01');
+        let copyAccount02 = new ClipboardJS('#copy-account02');
+        let copyAccount03 = new ClipboardJS('#copy-account03');
+        let copyAccount04 = new ClipboardJS('#copy-account04');
+      
+        copyAddress.on('success', function(e) {copyItem(e)});
+        copyAccount01.on('success', function(e) {copyItem(e)});
+        copyAccount02.on('success', function(e) {copyItem(e)});
+        copyAccount03.on('success', function(e) {copyItem(e)});
+        copyAccount04.on('success', function(e) {copyItem(e)});
+
+
+        function copyItem(event) {
+            console.log(event)
+            let copySuccess = event.trigger.querySelector('.copy_popup');
+            copySuccess.style.display='block';
+            setTimeout(() => {copySuccess.style.display = 'none'}, 2000);
+        }
+
+        //계죄번호 확인
+        //let accountWrap = document.querySelector(".account_wrap");
+        //let accountItem = accountWrap.querySelectorAll(".item .title");
+       // accountItem.forEach(ele => ele.addEventListener("click", function(){
+        //    let itemArea = this.parentElement;
+        //    if(itemArea.classList.contains("on")){
+         //       accountItem.forEach(el => el.parentElement.classList.remove("on"));
+        //        itemArea.classList.remove("on");
+        //     } else {
+        //        accountItem.forEach(el => el.parentElement.classList.remove("on"));
+        //       itemArea.classList.add("on");
+        //    }
+        //}));
+    </script>
+    <!-- <script type="text/javascript" src="resource/js/slide.js"></script> -->
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
